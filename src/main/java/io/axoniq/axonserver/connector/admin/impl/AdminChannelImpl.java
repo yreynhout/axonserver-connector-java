@@ -24,6 +24,7 @@ import io.axoniq.axonserver.connector.impl.FutureStreamObserver;
 import io.axoniq.axonserver.grpc.admin.EventProcessorAdminServiceGrpc;
 import io.axoniq.axonserver.grpc.admin.EventProcessorAdminServiceGrpc.EventProcessorAdminServiceStub;
 import io.axoniq.axonserver.grpc.admin.EventProcessorIdentifier;
+import io.axoniq.axonserver.grpc.admin.MoveSegment;
 import io.axoniq.axonserver.grpc.control.ClientIdentification;
 
 import java.util.concurrent.CompletableFuture;
@@ -80,6 +81,21 @@ public class AdminChannelImpl extends AbstractAxonServerChannel<Void> implements
         EventProcessorIdentifier eventProcessorIdentifier = eventProcessorId(eventProcessorName, tokenStoreIdentifier);
         FutureStreamObserver<Empty> responseObserver = new FutureStreamObserver<>(null);
         eventProcessorServiceStub.mergeEventProcessor(eventProcessorIdentifier, responseObserver);
+        return responseObserver.thenAccept(empty -> {
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> moveEventProcessor(String eventProcessorName, String tokenStoreIdentifier,
+                                                      int segmentId, String targetClientId) {
+        EventProcessorIdentifier eventProcessorIdentifier = eventProcessorId(eventProcessorName, tokenStoreIdentifier);
+        MoveSegment moveSegment = MoveSegment.newBuilder()
+                                             .setEventProcessor(eventProcessorIdentifier)
+                                             .setSegment(segmentId)
+                                             .setTargetClientId(targetClientId)
+                                             .build();
+        FutureStreamObserver<Empty> responseObserver = new FutureStreamObserver<>(null);
+        eventProcessorServiceStub.moveEventProcessorSegment(moveSegment, responseObserver);
         return responseObserver.thenAccept(empty -> {
         });
     }

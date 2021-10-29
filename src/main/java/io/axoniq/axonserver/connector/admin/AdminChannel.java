@@ -73,4 +73,22 @@ public interface AdminChannel {
      * @return a {@link CompletableFuture} that completes when the request has been delivered to AxonServer
      */
     CompletableFuture<Void> mergeEventProcessor(String eventProcessorName, String tokenStoreIdentifier);
+
+
+    /**
+     * Request to move one segment of a certain event processor to a specific client.
+     * Returns a {@link CompletableFuture} that completes when the request has been received by AxonServer.
+     * This doesn't imply that the segment has been moved already, but only that the request has been properly
+     * delivered.
+     *
+     * @param eventProcessorName   the name of the event processor
+     * @param tokenStoreIdentifier the token store identifier of the processor
+     * @param segmentId            the identifier of the segment to move
+     * @param targetClientId       the id of the client that should claim the segment
+     * @return a {@link CompletableFuture} that completes when the request has been delivered to AxonServer
+     */
+    CompletableFuture<Void> moveEventProcessor(String eventProcessorName,
+                                               String tokenStoreIdentifier,
+                                               int segmentId,
+                                               String targetClientId);
 }

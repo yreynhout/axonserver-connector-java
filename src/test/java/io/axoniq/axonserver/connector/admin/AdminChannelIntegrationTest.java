@@ -66,4 +66,15 @@ class AdminChannelIntegrationTest extends AbstractAxonServerIntegrationTest {
         accepted.get(1, SECONDS);
         Assertions.assertTrue(accepted.isDone());
     }
+
+    @Test
+    void testMoveEventProcessorSegment() throws Exception {
+        AdminChannel adminChannel = connection.adminChannel();
+        CompletableFuture<Void> accepted = adminChannel.moveEventProcessor("processor",
+                                                                           "tokenStore",
+                                                                           2,
+                                                                           "client-B");
+        accepted.get(1, SECONDS);
+        Assertions.assertTrue(accepted.isDone());
+    }
 }
